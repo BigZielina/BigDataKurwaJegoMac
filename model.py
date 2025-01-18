@@ -32,6 +32,10 @@ scaler = MinMaxScaler()
 num_columns = ['bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot', 'floors', 'year', 'month', 'day', 'day_of_week', 'quarter']
 data[num_columns] = scaler.fit_transform(data[num_columns])
 data.drop(columns=['street'], inplace=True)
+
+data = data[data['price'] != 0]  
+
+
 data.to_csv('USA_Housing_Dataset_cleaned.csv', index=False)
 
 # Przygotowanie danych do modelu
