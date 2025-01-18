@@ -10,14 +10,11 @@ import streamlit as st
 
 # Wczytanie danych
 data = pd.read_csv('USA Housing Dataset.csv')
+d = pd.read_csv('USA Housing Dataset.csv')
 
-# Skalowanie kolumn numerycznych
-scaler = MinMaxScaler()
-num_columns = ['price', 'bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot', 'floors', 'sqft_above', 'sqft_basement', 'yr_built', 'yr_renovated']
-data[num_columns] = scaler.fit_transform(data[num_columns])
 
 # Usuwanie kolumny 'country' oraz kodowanie kolumn kategorycznych
-data.drop(['country'], axis='columns', inplace=True)
+data.drop(['country','waterfront','view','condition', 'sqft_above','sqft_basement'], axis='columns', inplace=True)
 data = pd.get_dummies(data, columns=['city', 'statezip'], drop_first=True)
 
 # Konwersja kolumny 'date' na format datetime i generowanie nowych cech
@@ -30,6 +27,10 @@ data['quarter'] = data['date'].dt.quarter
 
 # Usuwanie kolumny 'date'
 data = data.drop(columns=['date'])
+
+scaler = MinMaxScaler()
+num_columns = ['bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot', 'floors', 'year', 'month', 'day', 'day_of_week', 'quarter']
+data[num_columns] = scaler.fit_transform(data[num_columns])
 
 # Przygotowanie danych do modelu
 X = data.drop(columns=['price', 'street'])  # Wszystkie kolumny poza 'price' i 'street'
@@ -72,8 +73,9 @@ day = st.number_input("Dzień zakupu (1-31)", min_value=1, max_value=31, step=1)
 day_of_week = st.number_input("Dzień tygodnia (0=Poniedziałek, 6=Niedziela)", min_value=0, max_value=6, step=1)
 quarter = st.number_input("Kwartał roku (1-4)", min_value=1, max_value=4, step=1)
 
+
 # Wybór miasta z listy unikalnych wartości
-city = st.selectbox("Wybierz miasto", options=data['city'].unique())
+city = st.selectbox("Wybierz miasto", options=d['city'].unique())
 
 # Przygotowanie danych wejściowych
 if st.button("Oblicz cenę"):
